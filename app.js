@@ -29,6 +29,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 
+function getFavoriteCount(req) {
+  return (req.session.favorites || []).length;
+}
+
+function getCartCount(req) {
+  return (req.session.cart || []).reduce((total, item) => total + item.quantity, 0);
+}
+
 app.get('/', function (req, res) {
   db.all(`SELECT * FROM categories`, [], function (err, categories) {
     if (err) return res.send('Database error');
@@ -51,6 +59,65 @@ app.get('/', function (req, res) {
     });
   });
 });
+
+app.get('/categories/:slug', (req, res) => {
+  const slug = req.params.slug;
+
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    db.get(`
+          SELECT *
+          FROM categories
+          WHERE slug = ?
+      `, [slug], (err, category) => {
+      if (err) return res.send('Database error');
+      if (!category) return res.status(404).send('Category not found');
+
+      db.all(`
+              SELECT *
+              FROM products
+              WHERE category_id = ?
+              AND published_at <= DATE('now')
+          `, [category.id], (err, products) => {
+        if (err) return res.send('Database error');
+
+        res.render('category', {
+          products,
+          categories,
+          category,
+          favoriteProductIds: req.session.favorites || [],
+          favoriteCount: getFavoriteCount(req),
+          cartCount: getCartCount(req)
+        });
+      });
+    });
+  });
+});
+
+app.get('/news', (req, res) => {
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    db.all(`
+          SELECT *
+          FROM products
+          WHERE published_at <= DATE('now')
+          AND published_at >= DATE('now', '-7 days')
+      `, [], (err, products) => {
+      if (err) return res.send('Database error');
+
+      res.render('news', {
+        products,
+        categories,
+        favoriteProductIds: req.session.favorites || [],
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    });
+  });
+});
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
