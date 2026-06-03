@@ -1,0 +1,49 @@
+<section class="products-section">
+    <div class="products-grid">
+
+        <% products.forEach(product=> { %>
+            <a href="/products/<%= product.slug %>" class="product-card">
+                <div class="product-image-wrapper">
+
+                    <% const publishedDate=new Date(product.published_at); const diffDays=(Date.now() -
+                        publishedDate.getTime()) / (1000 * 60 * 60 * 24); %>
+
+                        <% if (diffDays < 7) { %>
+                            <span class="product-badge">Nyhet</span>
+                            <% } %>
+
+                                <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
+
+                                <form action="/favorites/<%= product.id %>" method="POST" class="favorite-form">
+
+                                    <button type="submit" class="favorite-icon">
+
+                                        <% if (favoriteProductIds.includes(product.id)) { %>
+                                            ♥
+                                            <% } else { %>
+                                                ♡
+                                                <% } %>
+
+                                    </button>
+
+                                </form>
+                </div>
+
+                <div class="product-info">
+                    <div class="product-top-row">
+                        <h3>
+                            <%= product.name %>
+                        </h3>
+                        <p class="price">
+                            <%= product.price %> SEK
+                        </p>
+                    </div>
+                    <div>
+                        <p class="brand">Freaky Fashion</p>
+                    </div>
+                </div>
+            </a>
+            <% }) %>
+
+    </div>
+</section>
