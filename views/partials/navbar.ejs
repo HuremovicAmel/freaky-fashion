@@ -1,0 +1,21 @@
+<nav class="main-navigation">
+    <ul>
+
+        <li>
+            <a href="/news">
+                Nyheter
+            </a>
+        </li>
+
+        <% categories.forEach(category=> { %>
+
+            <li>
+                <a href="/categories/<%= category.slug %>">
+                    <%= category.name %>
+                </a>
+            </li>
+
+            <% }) %>
+
+    </ul>
+</nav>
