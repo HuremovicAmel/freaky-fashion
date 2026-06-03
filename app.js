@@ -154,6 +154,32 @@ app.get('/products/:slug', (req, res) => {
   });
 });
 
+app.get('/search', (req, res) => {
+  const searchTerm = req.query.q || '';
+
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    db.all(`
+      SELECT *
+      FROM products
+      WHERE name LIKE ?
+      AND published_at <= DATE('now')
+    `, [`%${searchTerm}%`], (err, products) => {
+      if (err) return res.send('Database error');
+
+      res.render('search', {
+        products,
+        categories,
+        searchTerm,
+        favoriteProductIds: req.session.favorites || [],
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    });
+  });
+});
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
