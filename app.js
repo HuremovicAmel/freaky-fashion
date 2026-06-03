@@ -118,6 +118,42 @@ app.get('/news', (req, res) => {
   });
 });
 
+app.get('/products/:slug', (req, res) => {
+  const slug = req.params.slug;
+
+  db.get(`
+    SELECT *
+    FROM products
+    WHERE slug = ?
+    AND published_at <= DATE('now')
+  `, [slug], (err, product) => {
+    if (err) return res.send('Database error');
+    if (!product) return res.status(404).send('Product not found');
+
+    db.all(`SELECT * FROM categories`, [], (err, categories) => {
+      if (err) return res.send('Database error');
+
+      db.all(`
+        SELECT *
+        FROM products
+        WHERE id != ?
+        AND published_at <= DATE('now')
+        LIMIT 6
+      `, [product.id], (err, similarProducts) => {
+        if (err) return res.send('Database error');
+
+        res.render('product-details', {
+          product,
+          similarProducts,
+          categories,
+          favoriteCount: getFavoriteCount(req),
+          cartCount: getCartCount(req)
+        });
+      });
+    });
+  });
+});
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
