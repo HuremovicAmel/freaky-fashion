@@ -1,0 +1,40 @@
+const db = require('./db');
+
+db.serialize(() => {
+    db.run(`DELETE FROM products`);
+    db.run(`DELETE FROM categories`);
+
+    db.run(`
+    INSERT INTO categories
+    (name, slug, image)
+    VALUES
+    ('Kläder', 'klader', '/images/categories/klader.jpg'),
+    ('Accessoarer', 'accessoarer', '/images/categories/accessoarer.jpg'),
+    ('Skor', 'skor', '/images/categories/skor.jpg')
+`);
+
+    db.run(`
+    INSERT INTO products 
+    (name, slug, description, price, image, published_at, category_id, is_popular)
+    VALUES
+    ('Svart T-shirt', 'svart-tshirt', 'En stilren svart t-shirt.', 199, '/images/placeholder.png', DATE('now'), 1, 1),
+    ('Vit T-shirt', 'vit-tshirt', 'En klassisk vit t-shirt.', 199, '/images/placeholder.png', DATE('now'), 1, 1),
+    ('Hoodie', 'hoodie', 'En bekväm hoodie.', 499, '/images/placeholder.png', DATE('now'), 1, 1),
+    ('Jeans', 'jeans', 'Blå jeans med modern passform.', 699, '/images/placeholder.png', DATE('now'), 1, 1),
+    ('Sneakers', 'sneakers', 'Bekväma sneakers.', 899, '/images/placeholder.png', DATE('now'), 2, 1),
+    ('Keps', 'keps', 'Svart keps med logga.', 149, '/images/placeholder.png', DATE('now'), 3, 1),
+    ('Jacka', 'jacka', 'Lätt jacka för vardag.', 999, '/images/placeholder.png', DATE('now'), 1, 1),
+    ('Ryggsäck', 'ryggsack', 'Praktisk ryggsäck.', 399, '/images/placeholder.png', DATE('now'), 3, 1),
+    ('Framtida produkt', 'framtida-produkt', 'Ska inte visas ännu.', 999, '/images/placeholder.png', DATE('now', '+10 days'), 1, 1)
+  `);
+
+    db.run(`
+    INSERT INTO users
+    (email, password, admin)
+    VALUES
+    ('admin@freakyfashion.com', '123456', 1)
+`);
+
+});
+
+console.log('Seed data inserted');
