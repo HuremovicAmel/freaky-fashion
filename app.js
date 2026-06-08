@@ -180,6 +180,57 @@ app.get('/search', (req, res) => {
   });
 });
 
+app.post('/favorites/:id', (req, res) => {
+  const productId = Number(req.params.id);
+
+  if (!req.session.favorites) {
+    req.session.favorites = [];
+  }
+
+  if (req.session.favorites.includes(productId)) {
+    req.session.favorites = req.session.favorites.filter(id => id !== productId);
+  } else {
+    req.session.favorites.push(productId);
+  }
+
+  res.redirect('back');
+});
+
+app.get('/favorites', (req, res) => {
+  const favoriteIds = req.session.favorites || [];
+
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    if (favoriteIds.length === 0) {
+      return res.render('favorites', {
+        products: [],
+        categories,
+        favoriteProductIds: favoriteIds,
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    }
+
+    const placeholders = favoriteIds.map(() => '?').join(',');
+
+    db.all(`
+      SELECT *
+      FROM products
+      WHERE id IN (${placeholders})
+    `, favoriteIds, (err, products) => {
+      if (err) return res.send('Database error');
+
+      res.render('favorites', {
+        products,
+        categories,
+        favoriteProductIds: favoriteIds,
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    });
+  });
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

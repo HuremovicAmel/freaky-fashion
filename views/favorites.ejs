@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mina favoriter</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="header-logo">
+            <a href="/" class="logo-box">
+                <img src="https://placehold.co/600x200/png" alt="Freaky Fashion Logo">
+            </a>
+        </div>
+
+        <div class="header-tools">
+            <form class="search-form" action="/search" method="get">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input type="search" name="q" placeholder="Sök produkt" aria-label="Sök produkt">
+            </form>
+
+            <div class="header-actions">
+                <a href="/favorites" class="icon-link favorites-link" aria-label="Favoriter">
+
+                    ♥
+
+                    <% if (favoriteCount> 0) { %>
+                        <span class="favorites-count">
+                            <%= favoriteCount %>
+                        </span>
+                        <% } %>
+
+                </a>
+                <a href="/basket" class="icon-link basket-link" aria-label="Varukorg">
+
+                    🛒
+
+                    <% if (cartCount> 0) { %>
+                        <span class="basket-count">
+                            <%= cartCount %>
+                        </span>
+                        <% } %>
+
+                </a>
+            </div>
+        </div>
+
+        <%- include('./partials/navbar') %>
+    </header>
+
+    <main>
+        <section class="category-page">
+            <h1 class="category-title">Mina favoriter</h1>
+
+            <% if (products.length===0) { %>
+                <p class="empty-message">Du har inga favoriter ännu.</p>
+                <% } %>
+
+                    <div class="products-grid">
+                        <% products.forEach(product=> { %>
+
+                            <a href="/products/<%= product.slug %>" class="product-card">
+                                <div class="product-image-wrapper">
+                                    <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
+
+                                    <form action="/favorites/<%= product.id %>" method="POST" class="favorite-form">
+                                        <button type="submit" class="favorite-icon">
+                                            <% if (favoriteProductIds.includes(product.id)) { %>
+                                                ♥
+                                                <% } else { %>
+                                                    ♡
+                                                    <% } %>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="product-info">
+                                    <div class="product-top-row">
+                                        <h3>
+                                            <%= product.name %>
+                                        </h3>
+                                        <p class="price">
+                                            <%= product.price %> SEK
+                                        </p>
+                                    </div>
+
+                                    <p class="brand">Freaky Fashion</p>
+                                </div>
+                            </a>
+
+                            <% }) %>
+                    </div>
+        </section>
+    </main>
+
+    <%- include('./partials/footer') %>
+
+</body>
+
+</html>
