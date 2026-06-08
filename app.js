@@ -316,6 +316,51 @@ app.post('/basket/delete/:productId', (req, res) => {
   res.redirect('/basket');
 });
 
+app.get('/checkout', (req, res) => {
+  const cartIds = req.session.cart || [];
+
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    if (cartIds.length === 0) {
+      return res.render('checkout', {
+        products: [],
+        categories,
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    }
+
+    const uniqueIds = [...new Set(cartIds)];
+    const placeholders = uniqueIds.map(() => '?').join(',');
+
+    db.all(`
+          SELECT *
+          FROM products
+          WHERE id IN (${placeholders})
+      `, uniqueIds, (err, products) => {
+      if (err) return res.send('Database error');
+
+      const checkoutProducts = products.map(product => {
+        const quantity = cartIds.filter(id => id === product.id).length;
+
+        return {
+          ...product,
+          quantity,
+          total: quantity * product.price
+        };
+      });
+
+      res.render('checkout', {
+        products: checkoutProducts,
+        categories,
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    });
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

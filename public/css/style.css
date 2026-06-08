@@ -571,6 +571,146 @@ main {
     font-size: 20px;
 }
 
+/* checkout-section */
+/* ===== MOBILE PRIKAZ ===== */
+.checkout-items-table {
+    display: none;
+}
+
+.checkout-title h1 {
+    text-align: center;
+    font-weight: 300;
+    padding: 32px;
+}
+
+/* prikaži kartice */
+.checkout-items-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.checkout-card-mobile {
+    border: 1px solid #666;
+    background-color: #fff;
+    padding: 16px 16px 12px;
+}
+
+.checkout-card-top-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.checkout-card-top-mobile h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #222;
+}
+
+.checkout-total-mobile {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #222;
+    white-space: nowrap;
+}
+
+.checkout-single-price-mobile {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.customer-details-title {
+    text-align: center;
+    padding: 32px 24px;
+    font-weight: 400;
+}
+
+.customer-form {
+    display: flex;
+    flex-direction: column;
+    padding-top: 32px;
+}
+
+.form-group {
+    margin-bottom: 48px;
+    padding-top: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: #333;
+    margin-top: -18px;
+}
+
+.form-group input {
+    width: 100%;
+    height: 30px;
+    border: 1px solid #666;
+    background-color: #fff;
+    font-size: 16px;
+    padding: 4px 8px;
+}
+
+.address-box {
+    margin: 8px 0 24px;
+    padding: 14px 16px 18px;
+    border: 1px solid #666;
+}
+
+.address-box legend {
+    padding: 0 4px;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 500;
+    color: #333;
+}
+
+.postcode-group input {
+    width: 162px;
+    max-width: 100%;
+}
+
+.newsletter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: #333;
+}
+
+.newsletter-row input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+.buy-btn {
+    width: 206px;
+    max-width: 100%;
+    height: 54px;
+    margin: 0 auto;
+    border: 1px solid #666;
+    background-color: #d9d9d9;
+    color: #222;
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
 @media (min-width: 640px) {
     .site-header {
         padding: 12px 12px 0;
@@ -884,6 +1024,227 @@ main {
         line-height: 1;
         font-weight: 400;
         color: #333;
+    }
+
+    .table-h1 h1 {
+        font-weight: 400;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .checkout-section {
+        padding-top: 28px;
+        padding-bottom: 28px;
+    }
+
+    .checkout-title {
+        margin: 0 0 24px;
+        font-size: 22px;
+        line-height: 1.1;
+        font-weight: 400;
+        text-align: center;
+    }
+
+    .checkout-items {
+        gap: 0;
+    }
+
+    .checkout-card {
+        padding: 0;
+        border: 1px solid #999;
+        background-color: #fff;
+        overflow: hidden;
+    }
+
+    .checkout-card-top,
+    .checkout-single-price {
+        display: none;
+    }
+
+    .checkout-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .checkout-table th,
+    .checkout-table td {
+        padding: 4px 6px;
+        text-align: left;
+        font-size: 12px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: #222;
+    }
+
+    .checkout-table th {
+        background-color: #d9d9d9;
+        font-weight: 500;
+        border: 1px solid #999;
+    }
+
+    .checkout-table td {
+        border-left: 1px solid #999;
+        border-right: 1px solid #999;
+    }
+
+    .checkout-table tbody tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+
+    .checkout-table tbody tr:nth-child(odd) {
+        background-color: #e6e6e6;
+    }
+
+    .checkout-items-mobile {
+        display: none;
+    }
+
+    .checkout-items-table {
+        display: block;
+    }
+
+    .checkout-table th:nth-child(1),
+    .checkout-table td:nth-child(1) {
+        width: 42%;
+    }
+
+    .checkout-table th:nth-child(2),
+    .checkout-table td:nth-child(2) {
+        width: 16%;
+    }
+
+    .checkout-table th:nth-child(3),
+    .checkout-table td:nth-child(3) {
+        width: 20%;
+    }
+
+    .checkout-table th:nth-child(4),
+    .checkout-table td:nth-child(4) {
+        width: 22%;
+    }
+
+    .customer-details-section {
+        padding-top: 34px;
+        padding-bottom: 34px;
+    }
+
+    .customer-details-title {
+        margin: 0 0 18px;
+        text-align: left;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: #333;
+        padding-bottom: 12px;
+        padding-left: 0;
+    }
+
+    .customer-form {
+        display: block;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 12px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        height: 24px;
+        border: 1px solid #999;
+        background-color: #fff;
+        padding: 2px 6px;
+        font-size: 12px;
+        box-sizing: border-box;
+    }
+
+    .email-group {
+        width: 48%;
+        margin-bottom: 18px;
+    }
+
+    .address-box {
+        margin: 10px 0 18px;
+        padding: 14px 16px 18px;
+        border: 1px solid #999;
+    }
+
+    .address-box legend {
+        padding: 0 4px;
+        font-size: 12px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: #333;
+    }
+
+    .address-box .form-group {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        padding-top: 16px;
+    }
+
+    .address-box .form-group label {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .postcode-group input {
+        width: 96px;
+    }
+
+    .city-group input {
+        width: 48%;
+    }
+
+    .newsletter-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 18px;
+        font-size: 12px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: #333;
+    }
+
+    .newsletter-row input {
+        width: 12px;
+        height: 12px;
+        margin: 0;
+    }
+
+    .buy-btn {
+        display: block;
+        width: 98px;
+        height: 32px;
+        margin: 0 auto;
+        border: 1px solid #999;
+        background-color: #d9d9d9;
+        color: #222;
+        font-size: 16px;
+        line-height: 1;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .benefits-section-checkout {
+        display: none;
     }
 }
 

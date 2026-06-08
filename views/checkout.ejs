@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kassan - Freaky Fashion</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="header-logo">
+            <a href="/" class="logo-box">
+                <img src="https://placehold.co/600x200/png" alt="Freaky Fashion Logo">
+            </a>
+        </div>
+
+        <div class="header-tools">
+            <form class="search-form" action="/search" method="get">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input type="search" name="q" placeholder="Sök produkt" aria-label="Sök produkt">
+            </form>
+
+            <div class="header-actions">
+                <a href="/favorites" class="icon-link favorites-link" aria-label="Favoriter">
+                    ♥
+                    <% if (favoriteCount> 0) { %>
+                        <span class="favorites-count">
+                            <%= favoriteCount %>
+                        </span>
+                        <% } %>
+                </a>
+
+                <a href="/basket" class="icon-link basket-link" aria-label="Varukorg">
+
+                    🛒
+
+                    <% if (cartCount> 0) { %>
+                        <span class="basket-count">
+                            <%= cartCount %>
+                        </span>
+                        <% } %>
+
+                </a>
+            </div>
+        </div>
+
+        <%- include('./partials/navbar') %>
+    </header>
+
+    <main>
+        <section class="checkout-section">
+            <h1 class="category-title">Kassan</h1>
+
+            <div class="checkout-items-mobile">
+                <% if (products.length===0) { %>
+                    <p>Varukorgen är tom.</p>
+                    <% } %>
+
+                        <% products.forEach(product=> { %>
+                            <article class="checkout-card-mobile">
+                                <div class="checkout-card-top-mobile">
+                                    <h2>
+                                        <%= product.quantity %> x <%= product.name %>
+                                    </h2>
+                                    <p class="checkout-total-mobile">
+                                        <%= product.total %> SEK
+                                    </p>
+                                </div>
+                                <p class="checkout-single-price-mobile">
+                                    <%= product.price %> SEK
+                                </p>
+                            </article>
+                            <% }) %>
+            </div>
+
+            <div class="checkout-items-table">
+                <div class="checkout-card">
+                    <table class="checkout-table">
+                        <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>Antal</th>
+                                <th>Pris</th>
+                                <th>Totalt</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% products.forEach(product=> { %>
+                                <tr>
+                                    <td>
+                                        <%= product.name %>
+                                    </td>
+                                    <td>
+                                        <%= product.quantity %>
+                                    </td>
+                                    <td>
+                                        <%= product.price %> SEK
+                                    </td>
+                                    <td>
+                                        <%= product.total %> SEK
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="customer-details-section">
+            <div class="customer-details-title">
+                <h2>Kunduppgifter</h2>
+            </div>
+
+            <form class="customer-form" action="#" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first-name">Förnamn</label>
+                        <input type="text" id="first-name" name="first-name" placeholder="Förnamn">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last-name">Efternamn</label>
+                        <input type="text" id="last-name" name="last-name" placeholder="Efternamn">
+                    </div>
+                </div>
+
+                <div class="form-group email-group">
+                    <label for="email">E-post</label>
+                    <input type="email" id="email" name="email" placeholder="E-post">
+                </div>
+
+                <fieldset class="address-box">
+                    <legend>Adress</legend>
+
+                    <div class="form-group">
+                        <label for="street">Gata</label>
+                        <input type="text" id="street" name="street" placeholder="Gata">
+                    </div>
+
+                    <div class="form-group postcode-group">
+                        <label for="postcode">Postnummer</label>
+                        <input type="text" id="postcode" name="postcode" placeholder="Postnummer">
+                    </div>
+
+                    <div class="form-group city-group">
+                        <label for="city">Stad</label>
+                        <input type="text" id="city" name="city" placeholder="Stad">
+                    </div>
+                </fieldset>
+
+                <label class="newsletter-row">
+                    <input type="checkbox" name="newsletter">
+                    <span>Jag vill ta emot nyhetsbrev</span>
+                </label>
+
+                <button type="button" class="buy-btn">Köp</button>
+            </form>
+        </section>
+    </main>
+
+    <%- include('./partials/footer') %>
+
+</body>
+
+</html>
