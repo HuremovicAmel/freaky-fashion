@@ -466,6 +466,30 @@ app.post('/admin/categories/new', requireAdmin, (req, res) => {
   });
 });
 
+
+app.get('/register', (req, res) => {
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    db.all(`
+          SELECT *
+          FROM products
+          WHERE published_at <= DATE('now')
+          LIMIT 8
+      `, [], (err, products) => {
+      if (err) return res.send('Database error');
+
+      res.render('register', {
+        categories,
+        products,
+        favoriteProductIds: req.session.favorites || [],
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    });
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

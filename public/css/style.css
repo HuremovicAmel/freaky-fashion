@@ -996,6 +996,23 @@ main {
     padding: 4px;
 }
 
+/*register button*/
+.register-form {
+    max-width: 500px;
+    margin: 0 auto 64px;
+}
+
+.register-btn {
+    display: block;
+    margin: 32px auto 0;
+    padding: 12px 32px;
+    border: 1px solid #222;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 18px;
+}
+
 @media (min-width: 640px) {
     .site-header {
         padding: 12px 12px 0;
