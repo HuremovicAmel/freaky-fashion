@@ -442,6 +442,30 @@ app.get('/admin/categories', requireAdmin, (req, res) => {
   });
 });
 
+app.get('/admin/categories/new', requireAdmin, (req, res) => {
+  res.render('admin/categories/new');
+});
+
+app.post('/admin/categories/new', requireAdmin, (req, res) => {
+  const name = req.body['category-name'];
+
+  const slug = name
+    .toLowerCase()
+    .replaceAll(' ', '-')
+    .replaceAll('å', 'a')
+    .replaceAll('ä', 'a')
+    .replaceAll('ö', 'o');
+
+  db.run(`
+      INSERT INTO categories (name, slug)
+      VALUES (?, ?)
+  `, [name, slug], (err) => {
+    if (err) return res.send('Database error');
+
+    res.redirect('/admin/categories');
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
