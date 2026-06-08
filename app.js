@@ -490,6 +490,30 @@ app.get('/register', (req, res) => {
   });
 });
 
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  db.run(`
+    INSERT INTO users (email, password, admin)
+    VALUES (?, ?, 0)
+  `, [email, password], (err) => {
+    if (err) return res.send('Database error');
+
+    res.redirect('/');
+  });
+});
+
+app.post('/admin/categories/delete/:id', requireAdmin, (req, res) => {
+  const categoryId = req.params.id;
+
+  db.run(`DELETE FROM categories WHERE id = ?`, [categoryId], (err) => {
+    if (err) return res.send('Database error');
+
+    res.redirect('/admin/categories');
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
