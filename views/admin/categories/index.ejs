@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration: Kategorier</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+        <header class="admin-header">
+            <h1>Administration</h1>
+        </header>
+
+        <aside class="admin-sidebar">
+            <nav class="admin-sidebar-nav">
+                <a href="/admin/products" class="admin-sidebar-link">Produkter</a>
+                <a href="/admin/categories" class="admin-sidebar-link active">Kategorier</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-top-row">
+                <h2>Kategorier</h2>
+                <a href="/admin/categories/new" class="new-product-btn">Ny kategori</a>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Namn</th>
+                            <th class="actions-column"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% categories.forEach(category=> { %>
+                            <tr>
+                                <td>
+                                    <%= category.name %>
+                                </td>
+
+                                <td class="admin-actions">
+                                    <form action="/admin/categories/delete/<%= category.id %>" method="POST">
+                                        <button type="submit" class="admin-icon-link" aria-label="Radera kategori">
+                                            🗑️
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

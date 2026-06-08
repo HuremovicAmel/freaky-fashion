@@ -428,6 +428,20 @@ app.post('/admin/products/new', requireAdmin, (req, res) => {
   });
 });
 
+app.get('/admin/categories', requireAdmin, (req, res) => {
+  db.all(`
+      SELECT *
+      FROM categories
+      ORDER BY id DESC
+  `, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    res.render('admin/categories/index', {
+      categories
+    });
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
