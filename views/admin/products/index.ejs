@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+        <header class="admin-header">
+            <h1>Administration</h1>
+        </header>
+
+        <aside class="admin-sidebar">
+            <nav class="admin-sidebar-nav">
+                <a href="/admin/products" class="admin-sidebar-link active">Produkter</a>
+                <a href="/admin/categories" class="admin-sidebar-link">Kategorier</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-top-row">
+                <h2>Produkter</h2>
+                <a href="/admin/products/new" class="new-product-btn">Ny produkt</a>
+            </div>
+
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Namn</th>
+                            <th>SKU</th>
+                            <th>Pris</th>
+                            <th class="actions-column"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% products.forEach(product=> { %>
+                            <tr>
+                                <td>
+                                    <%= product.name %>
+                                </td>
+                                <td>
+                                    <%= product.slug %>
+                                </td>
+                                <td>
+                                    <%= product.price %>
+                                </td>
+
+                                <td class="admin-actions">
+                                    <a href="#" class="admin-icon-link" aria-label="Redigera produkt">
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Z" stroke="currentColor"
+                                                stroke-width="2" stroke-linejoin="round" />
+                                            <path d="M13.5 7 17 10.5" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" />
+                                            <path
+                                                d="M19 6.5 17.5 5a1.41 1.41 0 0 0-2 0L14 6.5 17.5 10 19 8.5a1.41 1.41 0 0 0 0-2Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                                        </svg>
+                                    </a>
+
+                                    <form action="/admin/products/delete/<%= product.id %>" method="POST">
+                                        <button type="submit" class="admin-icon-link" aria-label="Radera produkt">
+                                            <svg viewBox="0 0 24 24" fill="none">
+                                                <path d="M4 7h16" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" />
+                                                <path d="M9 7V4h6v3" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" />
+                                                <path d="M7 7v12h10V7" stroke="currentColor" stroke-width="2" />
+                                                <path d="M10 11v5" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" />
+                                                <path d="M14 11v5" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

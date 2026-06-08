@@ -37,6 +37,12 @@ function getCartCount(req) {
   return (req.session.cart || []).reduce((total, item) => total + item.quantity, 0);
 }
 
+function requireAdmin(req, res, next) {
+  if (!req.session.user) return res.status(401).send('You must be logged in');
+  if (req.session.user.admin !== 1) return res.status(403).send('Access denied');
+  next();
+}
+
 app.get('/', function (req, res) {
   db.all(`SELECT * FROM categories`, [], function (err, categories) {
     if (err) return res.send('Database error');
@@ -358,6 +364,41 @@ app.get('/checkout', (req, res) => {
         cartCount: getCartCount(req)
       });
     });
+  });
+});
+
+app.get('/admin/products', requireAdmin, (req, res) => {
+  db.all(`
+      SELECT *
+      FROM products
+      ORDER BY id DESC
+  `, [], (err, products) => {
+    if (err) return res.send('Database error');
+
+    res.render('admin/products/index', { products });
+  });
+});
+
+app.post('/admin/products/delete/:id', requireAdmin, (req, res) => {
+  const productId = req.params.id;
+
+  db.run(`DELETE FROM products WHERE id = ?`, [productId], (err) => {
+    if (err) return res.send('Database error');
+
+    res.redirect('/admin/products');
+  });
+});
+
+app.get('/fake-login', (req, res) => {
+  db.get(`
+      SELECT *
+      FROM users
+      WHERE email = ?
+  `, ['admin@freakyfashion.com'], (err, user) => {
+    if (err) return res.send('Database error');
+
+    req.session.user = user;
+    res.send('Admin logged in');
   });
 });
 

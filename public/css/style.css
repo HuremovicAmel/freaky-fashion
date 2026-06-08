@@ -711,6 +711,144 @@ main {
     margin-bottom: 20px;
 }
 
+/* ADMIN PRODUCTS PAGE */
+.admin-layout {
+    min-height: 100vh;
+    background-color: #ffffff;
+    border: 1px solid #444;
+}
+
+.admin-sidebar {
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #555;
+    border-right: 1px solid #555;
+    min-height: 110px;
+    padding: 18px 24px;
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    grid-template-rows: auto 1fr;
+}
+
+.admin-header {
+    grid-column: 1 / -1;
+}
+
+.admin-sidebar {
+    min-height: auto;
+    border-bottom: none;
+    background-color: #d9d9d9;
+}
+
+.admin-header {
+    background-color: #2f2f2f;
+    padding: 16px 18px;
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.admin-sidebar-link {
+    text-decoration: none;
+    color: #222;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.admin-main {
+    padding: 20px 28px 40px;
+}
+
+.admin-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.admin-top-row h2 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 550;
+    color: #222;
+}
+
+.new-product-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 112px;
+    height: 42px;
+    padding: 0 16px;
+    border: 1px solid #666;
+    border-radius: 4px;
+    background-color: #e5e5e5;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.admin-table-wrapper {
+    overflow: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #666;
+    padding: 8px 8px;
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.2;
+    color: #333;
+}
+
+.admin-table th {
+    background-color: #d9d9d9;
+    font-weight: 500;
+}
+
+.actions-column {
+    width: 90px;
+}
+
+.admin-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.admin-icon-link {
+    width: 22px;
+    height: 22px;
+    color: #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.admin-icon-link svg {
+    width: 100%;
+    height: 100%;
+}
+
 @media (min-width: 640px) {
     .site-header {
         padding: 12px 12px 0;
