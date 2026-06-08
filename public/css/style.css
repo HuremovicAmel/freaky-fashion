@@ -849,6 +849,153 @@ main {
     height: 100%;
 }
 
+/* ADMIN NEW PRODUCT */
+.admin-form-main {
+    padding-bottom: 32px;
+}
+
+.admin-page-title {
+    margin: 0 0 16px;
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 600;
+    color: #222;
+}
+
+.admin-product-form {
+    max-width: 420px;
+}
+
+.admin-form-group {
+    margin-bottom: 12px;
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    grid-template-rows: auto 1fr;
+}
+
+.admin-header {
+    grid-column: 1 / -1;
+}
+
+.admin-sidebar {
+    min-height: auto;
+    border-bottom: none;
+    background-color: #d9d9d9;
+}
+
+.admin-form-main {
+    padding-top: 18px;
+}
+
+.admin-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: #333;
+}
+
+.admin-form-group input,
+.admin-form-group textarea {
+    width: 100%;
+    border: 1px solid #666;
+    background-color: #ffffff;
+    font-size: 14px;
+    color: #333;
+    padding: 6px 8px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-form-group input {
+    height: 32px;
+}
+
+.admin-form-group textarea {
+    min-height: 140px;
+    resize: none;
+}
+
+.admin-form-group input[type="file"] {
+    padding: 4px;
+    height: auto;
+    width: 90px;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.admin-table tbody tr:nth-child(odd) {
+    background-color: #e6e6e6;
+}
+
+.admin-form-group input[type="date"] {
+    width: 180px;
+}
+
+.admin-category-group {
+    margin: 8px 0 18px;
+    padding: 0;
+    border: none;
+}
+
+.admin-category-group legend {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: #333;
+}
+
+.admin-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+.admin-checkbox-row input {
+    margin: 0;
+}
+
+.admin-submit-btn {
+    min-width: 90px;
+    height: 38px;
+    padding: 0 14px;
+    border: 1px solid #666;
+    border-radius: 3px;
+    background-color: #d9d9d9;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+.custom-file-button {
+    display: inline-block;
+    width: 72px;
+    height: 26px;
+    text-align: center;
+    border: 1px solid #666;
+    border-radius: 5px;
+    background-color: #d9d9d9;
+    font-size: 12px;
+    font-weight: 400;
+    color: #333;
+    cursor: pointer;
+    padding: 4px;
+}
+
 @media (min-width: 640px) {
     .site-header {
         padding: 12px 12px 0;

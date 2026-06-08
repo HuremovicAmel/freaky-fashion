@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration: Ny produkt</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+        <header class="admin-header">
+            <h1>Administration</h1>
+        </header>
+
+        <aside class="admin-sidebar">
+            <nav class="admin-sidebar-nav">
+                <a href="/admin/products" class="admin-sidebar-link active">Produkter</a>
+                <a href="/admin/categories" class="admin-sidebar-link">Kategorier</a>
+            </nav>
+        </aside>
+
+        <main class="admin-form-main">
+            <h2 class="admin-page-title">Ny produkt</h2>
+
+            <form class="admin-product-form" action="/admin/products/new" method="POST" enctype="multipart/form-data">
+
+                <div class="admin-form-group">
+                    <label for="product-name">Namn</label>
+                    <input type="text" id="product-name" name="product-name" placeholder="Ange namn" maxlength="50"
+                        required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="product-description">Beskrivning</label>
+                    <textarea id="product-description" name="product-description" placeholder="Ange beskrivning"
+                        required maxlength="25"></textarea>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="product-image">Bild</label>
+                    <label for="product-image" class="custom-file-button">Välj fil</label>
+                    <input type="file" id="product-image" name="product-image" accept=".png,.jpg,.jpeg" required
+                        class="hidden-file-input">
+                </div>
+
+                <div class="admin-form-group sku-group">
+                    <label for="product-sku">SKU</label>
+                    <input type="text" id="product-sku" name="product-sku" placeholder="Ange SKU"
+                        pattern="[A-Z]{3}[0-9]{3}" title="SKU ska vara i formatet AAA111" required>
+                </div>
+
+                <div class="admin-form-group price-group">
+                    <label for="product-price">Pris</label>
+                    <input type="number" id="product-price" name="product-price" required>
+                </div>
+
+                <div class="admin-form-group date-group">
+                    <label for="publish-date">Publiceringsdatum</label>
+                    <input type="date" id="publish-date" name="publish-date" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="category-id">Kategori</label>
+                    <select id="category-id" name="category-id" required>
+                        <% categories.forEach(category=> { %>
+                            <option value="<%= category.id %>">
+                                <%= category.name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+                <button type="submit" class="admin-submit-btn">Lägg till</button>
+            </form>
+        </main>
+    </div>
+
+</body>
+
+</html>

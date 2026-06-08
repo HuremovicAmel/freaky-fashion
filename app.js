@@ -402,6 +402,32 @@ app.get('/fake-login', (req, res) => {
   });
 });
 
+app.get('/admin/products/new', requireAdmin, (req, res) => {
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    res.render('admin/products/new', { categories });
+  });
+});
+
+app.post('/admin/products/new', requireAdmin, (req, res) => {
+  const name = req.body['product-name'];
+  const description = req.body['product-description'];
+  const slug = req.body['product-sku'];
+  const price = req.body['product-price'];
+  const publishedAt = req.body['publish-date'];
+  const categoryId = req.body['category-id'];
+
+  db.run(`
+      INSERT INTO products (name, description, slug, price, published_at, category_id, image)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+  `, [name, description, slug, price, publishedAt, categoryId, 'https://placehold.co/600x400.png'], (err) => {
+    if (err) return res.send('Database error');
+
+    res.redirect('/admin/products');
+  });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
