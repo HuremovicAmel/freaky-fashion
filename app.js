@@ -4,14 +4,33 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
+var multer = require('multer');
+var fs = require('fs');
 var db = require('./database/db');
-
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
 
 var app = express();
 
-// view engine setup
+var productsImageDir = path.join(__dirname, 'public/images/products');
+var categoriesImageDir = path.join(__dirname, 'public/images/categories');
+
+fs.mkdirSync(productsImageDir, { recursive: true });
+fs.mkdirSync(categoriesImageDir, { recursive: true });
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (file.fieldname === 'category-image') {
+      cb(null, categoriesImageDir);
+    } else {
+      cb(null, productsImageDir);
+    }
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '-'));
+  }
+});
+
+var upload = multer({ storage: storage });
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -19,22 +38,21 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 app.use(session({
   secret: 'freaky-fashion-secret',
   resave: false,
   saveUninitialized: true
 }));
-app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+app.use(express.static(path.join(__dirname, 'public')));
 
 function getFavoriteCount(req) {
   return (req.session.favorites || []).length;
 }
 
 function getCartCount(req) {
-  return (req.session.cart || []).reduce((total, item) => total + item.quantity, 0);
+  return (req.session.cart || []).length;
 }
 
 function requireAdmin(req, res, next) {
@@ -56,11 +74,11 @@ app.get('/', function (req, res) {
       if (err) return res.send('Database error');
 
       res.render('index', {
-        products: products,
-        categories: categories,
+        products,
+        categories,
         favoriteProductIds: req.session.favorites || [],
-        favoriteCount: (req.session.favorites || []).length,
-        cartCount: (req.session.cart || []).length
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
       });
     });
   });
@@ -72,20 +90,16 @@ app.get('/categories/:slug', (req, res) => {
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
     if (err) return res.send('Database error');
 
-    db.get(`
-          SELECT *
-          FROM categories
-          WHERE slug = ?
-      `, [slug], (err, category) => {
+    db.get(`SELECT * FROM categories WHERE slug = ?`, [slug], (err, category) => {
       if (err) return res.send('Database error');
       if (!category) return res.status(404).send('Category not found');
 
       db.all(`
-              SELECT *
-              FROM products
-              WHERE category_id = ?
-              AND published_at <= DATE('now')
-          `, [category.id], (err, products) => {
+        SELECT *
+        FROM products
+        WHERE category_id = ?
+        AND published_at <= DATE('now')
+      `, [category.id], (err, products) => {
         if (err) return res.send('Database error');
 
         res.render('category', {
@@ -106,11 +120,11 @@ app.get('/news', (req, res) => {
     if (err) return res.send('Database error');
 
     db.all(`
-          SELECT *
-          FROM products
-          WHERE published_at <= DATE('now')
-          AND published_at >= DATE('now', '-7 days')
-      `, [], (err, products) => {
+      SELECT *
+      FROM products
+      WHERE published_at <= DATE('now')
+      AND published_at >= DATE('now', '-7 days')
+    `, [], (err, products) => {
       if (err) return res.send('Database error');
 
       res.render('news', {
@@ -267,10 +281,10 @@ app.get('/basket', (req, res) => {
     const placeholders = uniqueIds.map(() => '?').join(',');
 
     db.all(`
-          SELECT *
-          FROM products
-          WHERE id IN (${placeholders})
-      `, uniqueIds, (err, products) => {
+      SELECT *
+      FROM products
+      WHERE id IN (${placeholders})
+    `, uniqueIds, (err, products) => {
       if (err) return res.send('Database error');
 
       const cartProducts = products.map(product => {
@@ -298,7 +312,6 @@ app.post('/basket/update/:productId', (req, res) => {
   const quantity = Number(req.body.quantity);
 
   let cart = req.session.cart || [];
-
   cart = cart.filter(id => id !== productId);
 
   for (let i = 0; i < quantity; i++) {
@@ -306,7 +319,6 @@ app.post('/basket/update/:productId', (req, res) => {
   }
 
   req.session.cart = cart;
-
   res.redirect('/basket');
 });
 
@@ -314,11 +326,9 @@ app.post('/basket/delete/:productId', (req, res) => {
   const productId = Number(req.params.productId);
 
   let cart = req.session.cart || [];
-
   cart = cart.filter(id => id !== productId);
 
   req.session.cart = cart;
-
   res.redirect('/basket');
 });
 
@@ -341,10 +351,10 @@ app.get('/checkout', (req, res) => {
     const placeholders = uniqueIds.map(() => '?').join(',');
 
     db.all(`
-          SELECT *
-          FROM products
-          WHERE id IN (${placeholders})
-      `, uniqueIds, (err, products) => {
+      SELECT *
+      FROM products
+      WHERE id IN (${placeholders})
+    `, uniqueIds, (err, products) => {
       if (err) return res.send('Database error');
 
       const checkoutProducts = products.map(product => {
@@ -367,11 +377,25 @@ app.get('/checkout', (req, res) => {
   });
 });
 
+app.get('/fake-login', (req, res) => {
+  db.get(`
+    SELECT *
+    FROM users
+    WHERE email = ?
+  `, ['admin@freakyfashion.com'], (err, user) => {
+    if (err) return res.send('Database error');
+    if (!user) return res.send('Admin user not found');
+
+    req.session.user = user;
+    res.send('Admin logged in');
+  });
+});
+
 app.get('/admin/products', requireAdmin, (req, res) => {
   db.all(`
-      SELECT *
-      FROM products
-      ORDER BY id DESC
+    SELECT *
+    FROM products
+    ORDER BY id DESC
   `, [], (err, products) => {
     if (err) return res.send('Database error');
 
@@ -389,40 +413,31 @@ app.post('/admin/products/delete/:id', requireAdmin, (req, res) => {
   });
 });
 
-app.get('/fake-login', (req, res) => {
-  db.get(`
-      SELECT *
-      FROM users
-      WHERE email = ?
-  `, ['admin@freakyfashion.com'], (err, user) => {
-    if (err) return res.send('Database error');
-
-    req.session.user = user;
-    res.send('Admin logged in');
-  });
-});
-
 app.get('/admin/products/new', requireAdmin, (req, res) => {
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
-    if (err) return res.send('Database error');
+    if (err) return res.send(err.message);
 
     res.render('admin/products/new', { categories });
   });
 });
 
-app.post('/admin/products/new', requireAdmin, (req, res) => {
+app.post('/admin/products/new', requireAdmin, upload.single('product-image'), (req, res) => {
   const name = req.body['product-name'];
   const description = req.body['product-description'];
   const slug = req.body['product-sku'];
   const price = req.body['product-price'];
   const publishedAt = req.body['publish-date'];
   const categoryId = req.body['category-id'];
+  const image = req.file ? `/images/products/${req.file.filename}` : 'https://placehold.co/600x400.png';
 
   db.run(`
-      INSERT INTO products (name, description, slug, price, published_at, category_id, image)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-  `, [name, description, slug, price, publishedAt, categoryId, 'https://placehold.co/600x400.png'], (err) => {
-    if (err) return res.send('Database error');
+    INSERT INTO products (name, description, slug, price, published_at, category_id, image)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `, [name, description, slug, price, publishedAt, categoryId, image], (err) => {
+    if (err) {
+      console.log(err.message);
+      return res.send(err.message);
+    }
 
     res.redirect('/admin/products');
   });
@@ -430,15 +445,13 @@ app.post('/admin/products/new', requireAdmin, (req, res) => {
 
 app.get('/admin/categories', requireAdmin, (req, res) => {
   db.all(`
-      SELECT *
-      FROM categories
-      ORDER BY id DESC
+    SELECT *
+    FROM categories
+    ORDER BY id DESC
   `, [], (err, categories) => {
     if (err) return res.send('Database error');
 
-    res.render('admin/categories/index', {
-      categories
-    });
+    res.render('admin/categories/index', { categories });
   });
 });
 
@@ -446,8 +459,9 @@ app.get('/admin/categories/new', requireAdmin, (req, res) => {
   res.render('admin/categories/new');
 });
 
-app.post('/admin/categories/new', requireAdmin, (req, res) => {
+app.post('/admin/categories/new', requireAdmin, upload.single('category-image'), (req, res) => {
   const name = req.body['category-name'];
+  const image = req.file ? `/images/categories/${req.file.filename}` : null;
 
   const slug = name
     .toLowerCase()
@@ -457,26 +471,38 @@ app.post('/admin/categories/new', requireAdmin, (req, res) => {
     .replaceAll('ö', 'o');
 
   db.run(`
-      INSERT INTO categories (name, slug)
-      VALUES (?, ?)
-  `, [name, slug], (err) => {
+    INSERT INTO categories (name, slug, image)
+    VALUES (?, ?, ?)
+  `, [name, slug, image], (err) => {
+    if (err) {
+      console.log(err.message);
+      return res.send(err.message);
+    }
+
+    res.redirect('/admin/categories');
+  });
+});
+
+app.post('/admin/categories/delete/:id', requireAdmin, (req, res) => {
+  const categoryId = req.params.id;
+
+  db.run(`DELETE FROM categories WHERE id = ?`, [categoryId], (err) => {
     if (err) return res.send('Database error');
 
     res.redirect('/admin/categories');
   });
 });
 
-
 app.get('/register', (req, res) => {
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
     if (err) return res.send('Database error');
 
     db.all(`
-          SELECT *
-          FROM products
-          WHERE published_at <= DATE('now')
-          LIMIT 8
-      `, [], (err, products) => {
+      SELECT *
+      FROM products
+      WHERE published_at <= DATE('now')
+      LIMIT 8
+    `, [], (err, products) => {
       if (err) return res.send('Database error');
 
       res.render('register', {
@@ -504,28 +530,14 @@ app.post('/register', (req, res) => {
   });
 });
 
-app.post('/admin/categories/delete/:id', requireAdmin, (req, res) => {
-  const categoryId = req.params.id;
-
-  db.run(`DELETE FROM categories WHERE id = ?`, [categoryId], (err) => {
-    if (err) return res.send('Database error');
-
-    res.redirect('/admin/categories');
-  });
-});
-
-// catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
