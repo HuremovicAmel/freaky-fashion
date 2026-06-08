@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varukorgen</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="header-logo">
+            <a href="/" class="logo-box">
+                <img src="https://placehold.co/600x200/png" alt="Freaky Fashion Logo">
+            </a>
+        </div>
+
+        <div class="header-tools">
+            <form class="search-form" action="/search" method="get">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input type="search" name="q" placeholder="Sök produkt" aria-label="Sök produkt">
+            </form>
+
+            <div class="header-actions">
+                <a href="/favorites" class="icon-link favorites-link" aria-label="Favoriter">
+                    ♥
+                    <% if (favoriteCount> 0) { %>
+                        <span class="favorites-count">
+                            <%= favoriteCount %>
+                        </span>
+                        <% } %>
+                </a>
+
+                <a href="/basket" class="icon-link basket-link" aria-label="Varukorg">
+                    🛒
+                    <% if (cartCount> 0) { %>
+                        <span class="basket-count">
+                            <%= cartCount %>
+                        </span>
+                        <% } %>
+                </a>
+            </div>
+        </div>
+
+        <%- include('./partials/navbar') %>
+    </header>
+
+    <main>
+        <section class="basket-page">
+            <h1 class="category-title">Varukorgen</h1>
+
+            <% if (products.length===0) { %>
+                <p class="empty-message">Din varukorg är tom.</p>
+                <% } else { %>
+
+                    <table class="checkout-table basket-table">
+                        <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>Pris</th>
+                                <th>Totalt</th>
+                                <th>Antal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% products.forEach(product=> { %>
+                                <tr>
+                                    <td>
+                                        <%= product.name %>
+                                    </td>
+
+                                    <td>
+                                        <%= product.price %> SEK
+                                    </td>
+
+                                    <td>
+                                        <%= product.total %> SEK
+                                    </td>
+
+                                    <td>
+                                        <div class="basket-actions">
+                                            <form action="/basket/update/<%= product.id %>" method="POST">
+                                                <select name="quantity" onchange="this.form.submit()">
+                                                    <% for (let i=1; i <=10; i++) { %>
+                                                        <option value="<%= i %>" <%=product.quantity===i ? 'selected'
+                                                            : '' %>>
+                                                            <%= i %>
+                                                        </option>
+                                                        <% } %>
+                                                </select>
+                                            </form>
+
+                                            <form action="/basket/delete/<%= product.id %>" method="POST">
+                                                <button type="submit" class="delete-btn">🗑️</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+
+                    <a href="/checkout" class="checkout-button">Till kassan</a>
+
+                    <% } %>
+        </section>
+    </main>
+
+    <%- include('./partials/footer') %>
+
+</body>
+
+</html>

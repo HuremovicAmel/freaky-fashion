@@ -515,6 +515,62 @@ main {
     color: #333;
 }
 
+/*basket icon*/
+.basket-page {
+    padding: 24px 16px;
+}
+
+.basket-list {
+    border: 1px solid #222;
+    margin: 24px 0;
+}
+
+.basket-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+.basket-item:last-child {
+    border-bottom: none;
+}
+
+.basket-item h3,
+.basket-item p {
+    margin: 0 0 6px;
+}
+
+.basket-item-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.basket-item-right select {
+    padding: 4px;
+}
+
+.delete-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.checkout-button {
+    display: block;
+    width: fit-content;
+    margin: 32px auto;
+    padding: 14px 48px;
+    border: 1px solid #222;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #222;
+    font-size: 20px;
+}
+
 @media (min-width: 640px) {
     .site-header {
         padding: 12px 12px 0;
@@ -830,6 +886,53 @@ main {
         color: #333;
     }
 }
+
+@media (min-width: 768px) {
+    .basket-table {
+        width: 100%;
+        margin: 32px 0;
+        border-collapse: collapse;
+    }
+
+    .basket-table th,
+    .basket-table td {
+        border: 1px solid #999;
+        padding: 10px 12px;
+        text-align: left;
+    }
+
+    .basket-table th {
+        background-color: #d9d9d9;
+        font-weight: 600;
+    }
+
+    .basket-table tbody tr:nth-child(odd) {
+        background-color: #e6e6e6;
+    }
+
+    .basket-table tbody tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+
+    .basket-table select {
+        padding: 4px 8px;
+    }
+
+    .basket-table form {
+        margin: 0;
+    }
+
+    .basket-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .basket-actions form {
+        margin: 0;
+    }
+}
+
 
 @media (min-width: 1024px) {
     .site-header {

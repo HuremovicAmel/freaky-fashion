@@ -232,6 +232,90 @@ app.get('/favorites', (req, res) => {
   });
 });
 
+app.post('/cart/:productId', (req, res) => {
+  const productId = Number(req.params.productId);
+
+  if (!req.session.cart) req.session.cart = [];
+
+  req.session.cart.push(productId);
+
+  res.redirect(req.get('referer') || '/');
+});
+
+app.get('/basket', (req, res) => {
+  const cartIds = req.session.cart || [];
+
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    if (cartIds.length === 0) {
+      return res.render('basket', {
+        products: [],
+        categories,
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    }
+
+    const uniqueIds = [...new Set(cartIds)];
+    const placeholders = uniqueIds.map(() => '?').join(',');
+
+    db.all(`
+          SELECT *
+          FROM products
+          WHERE id IN (${placeholders})
+      `, uniqueIds, (err, products) => {
+      if (err) return res.send('Database error');
+
+      const cartProducts = products.map(product => {
+        const quantity = cartIds.filter(id => id === product.id).length;
+
+        return {
+          ...product,
+          quantity,
+          total: quantity * product.price
+        };
+      });
+
+      res.render('basket', {
+        products: cartProducts,
+        categories,
+        favoriteCount: getFavoriteCount(req),
+        cartCount: getCartCount(req)
+      });
+    });
+  });
+});
+
+app.post('/basket/update/:productId', (req, res) => {
+  const productId = Number(req.params.productId);
+  const quantity = Number(req.body.quantity);
+
+  let cart = req.session.cart || [];
+
+  cart = cart.filter(id => id !== productId);
+
+  for (let i = 0; i < quantity; i++) {
+    cart.push(productId);
+  }
+
+  req.session.cart = cart;
+
+  res.redirect('/basket');
+});
+
+app.post('/basket/delete/:productId', (req, res) => {
+  const productId = Number(req.params.productId);
+
+  let cart = req.session.cart || [];
+
+  cart = cart.filter(id => id !== productId);
+
+  req.session.cart = cart;
+
+  res.redirect('/basket');
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
