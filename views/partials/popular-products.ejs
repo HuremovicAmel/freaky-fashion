@@ -14,18 +14,14 @@
 
                                 <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
 
-                                <form action="/favorites/<%= product.id %>" method="POST" class="favorite-form">
-
+                                <form action="/favorites/<%= product.id %>" method="POST">
                                     <button type="submit" class="favorite-icon">
-
                                         <% if (favoriteProductIds.includes(product.id)) { %>
                                             ♥
                                             <% } else { %>
                                                 ♡
                                                 <% } %>
-
                                     </button>
-
                                 </form>
                 </div>
 

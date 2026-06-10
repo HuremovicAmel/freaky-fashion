@@ -55,6 +55,26 @@ function getCartCount(req) {
   return (req.session.cart || []).length;
 }
 
+function getFavoriteProductIds(req, callback) {
+  if (!req.session.user) {
+    return callback(null, req.session.favorites || []);
+  }
+
+  db.all(`
+    SELECT product_id
+    FROM favorites
+    WHERE user_id = ?
+  `, [req.session.user.id], (err, rows) => {
+    if (err) {
+      console.log(err.message);
+      return callback(err);
+    }
+
+    const favoriteIds = rows.map(row => row.product_id);
+    callback(null, favoriteIds);
+  });
+}
+
 function requireAdmin(req, res, next) {
   if (!req.session.user) return res.status(401).send('You must be logged in');
   if (req.session.user.admin !== 1) return res.status(403).send('Access denied');
@@ -73,36 +93,41 @@ app.get('/', function (req, res) {
     `, [], function (err, products) {
       if (err) return res.send('Database error');
 
-      res.render('index', {
-        products,
-        categories,
+      getFavoriteProductIds(req, (err, favoriteProductIds) => {
+        if (err) return res.send('Database error');
 
-        hero: {
-          image: 'https://placehold.co/600x400.png',
-          title: 'Freaky Fashion',
-          text: 'Välkommen till vår butik'
-        },
+        res.render('index', {
+          products,
+          categories,
 
-        spots: [
-          {
+          hero: {
             image: 'https://placehold.co/600x400.png',
-            text: 'Kläder',
-            link: '/categories/klader'
+            title: 'Freaky Fashion',
+            text: 'Välkommen till vår butik'
           },
-          {
-            image: 'https://placehold.co/600x400.png',
-            text: 'Accessoarer',
-            link: '/categories/accessoarer'
-          },
-          {
-            image: 'https://placehold.co/600x400.png',
-            text: 'Skor',
-            link: '/categories/skor'
-          }
-        ],
-        favoriteProductIds: req.session.favorites || [],
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+
+          spots: [
+            {
+              image: 'https://placehold.co/600x400.png',
+              text: 'Kläder',
+              link: '/categories/klader'
+            },
+            {
+              image: 'https://placehold.co/600x400.png',
+              text: 'Accessoarer',
+              link: '/categories/accessoarer'
+            },
+            {
+              image: 'https://placehold.co/600x400.png',
+              text: 'Skor',
+              link: '/categories/skor'
+            }
+          ],
+
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -227,17 +252,52 @@ app.get('/search', (req, res) => {
 app.post('/favorites/:id', (req, res) => {
   const productId = Number(req.params.id);
 
-  if (!req.session.favorites) {
-    req.session.favorites = [];
-  }
+  if (req.session.user) {
+    const userId = req.session.user.id;
 
-  if (req.session.favorites.includes(productId)) {
-    req.session.favorites = req.session.favorites.filter(id => id !== productId);
+    db.get(`
+      SELECT *
+      FROM favorites
+      WHERE user_id = ?
+      AND product_id = ?
+    `, [userId, productId], (err, favorite) => {
+      if (err) return res.send('Database error');
+
+      if (favorite) {
+        db.run(`
+          DELETE FROM favorites
+          WHERE user_id = ?
+          AND product_id = ?
+        `, [userId, productId], (err) => {
+          if (err) return res.send('Database error');
+
+          res.redirect('back');
+        });
+      } else {
+        db.run(`
+          INSERT INTO favorites (user_id, product_id)
+          VALUES (?, ?)
+        `, [userId, productId], (err) => {
+          if (err) return res.send('Database error');
+
+          res.redirect('back');
+        });
+      }
+    });
+
   } else {
-    req.session.favorites.push(productId);
-  }
+    if (!req.session.favorites) {
+      req.session.favorites = [];
+    }
 
-  res.redirect('back');
+    if (req.session.favorites.includes(productId)) {
+      req.session.favorites = req.session.favorites.filter(id => id !== productId);
+    } else {
+      req.session.favorites.push(productId);
+    }
+
+    res.redirect('back');
+  }
 });
 
 app.get('/favorites', (req, res) => {
