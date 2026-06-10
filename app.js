@@ -76,6 +76,13 @@ app.get('/', function (req, res) {
       res.render('index', {
         products,
         categories,
+
+        hero: {
+          image: 'https://placehold.co/600x400.png',
+          title: 'Freaky Fashion',
+          text: 'Välkommen till vår butik'
+        },
+
         spots: [
           {
             image: 'https://placehold.co/600x400.png',
