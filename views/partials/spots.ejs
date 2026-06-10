@@ -1,0 +1,15 @@
+<section class="spots-section">
+
+    <% spots.forEach(spot=> { %>
+
+        <a href="<%= spot.link %>" class="spot-card">
+            <img src="<%= spot.image %>" alt="<%= spot.text %>" class="spot-image">
+
+            <h3>
+                <%= spot.text %>
+            </h3>
+        </a>
+
+        <% }) %>
+
+</section>

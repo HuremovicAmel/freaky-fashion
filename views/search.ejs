@@ -3,80 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Sökresultat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sökresultat - Freaky Fashion</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<header class="site-header">
-    <div class="header-logo">
-        <a href="/" class="logo-box">
-            <img src="https://placehold.co/600x200/png" alt="Freaky Fashion Logo">
-        </a>
-    </div>
-
-    <div class="header-tools">
-        <form class="search-form" action="/search" method="get">
-            <span class="search-icon" aria-hidden="true">🔍</span>
-            <input type="search" name="q" placeholder="Sök produkt" aria-label="Sök produkt" value="<%= searchTerm %>">
-        </form>
-
-        <div class="header-actions">
-            <a href="/favorites" class="icon-link favorites-link" aria-label="Favoriter">
-
-                ♥
-
-                <% if (favoriteCount> 0) { %>
-                    <span class="favorites-count">
-                        <%= favoriteCount %>
-                    </span>
-                    <% } %>
-
-            </a>
-            <a href="/basket" class="icon-link basket-link" aria-label="Varukorg">
-
-                🛒
-
-                <% if (cartCount> 0) { %>
-                    <span class="basket-count">
-                        <%= cartCount %>
-                    </span>
-                    <% } %>
-
-            </a>
-        </div>
-    </div>
-
-    <%- include('./partials/navbar') %>
-</header>
 
 <body>
 
-    <h1 class="category-title">
-        Hittade <%= products.length %> produkter
-    </h1>
-
-    <div class="products-grid">
-        <% products.forEach(product=> { %>
-            <a href="/products/<%= product.slug %>" class="product-card">
-                <div class="product-image-wrapper">
-                    <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
-                </div>
-
-                <div class="product-info">
-                    <div class="product-top-row">
-                        <h3>
-                            <%= product.name %>
-                        </h3>
-                        <p class="price">
-                            <%= product.price %> SEK
-                        </p>
-                    </div>
-                    <p class="brand">Freaky Fashion</p>
-                </div>
+    <header class="site-header">
+        <div class="header-logo">
+            <a href="/" class="logo-box">
+                <img src="https://placehold.co/600x200/png" alt="Freaky Fashion Logo">
             </a>
-            <% }) %>
-    </div>
+        </div>
+
+        <div class="header-tools">
+            <form class="search-form" action="/search" method="get">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+
+                <input type="search" name="q" placeholder="Sök produkt" aria-label="Sök produkt"
+                    value="<%= searchTerm %>">
+            </form>
+
+            <div class="header-actions">
+                <a href="/favorites" class="icon-link favorites-link" aria-label="Favoriter">
+                    ♥
+
+                    <% if (favoriteCount> 0) { %>
+                        <span class="favorites-count">
+                            <%= favoriteCount %>
+                        </span>
+                        <% } %>
+                </a>
+
+                <a href="/basket" class="icon-link basket-link" aria-label="Varukorg">
+                    🛒
+
+                    <% if (cartCount> 0) { %>
+                        <span class="basket-count">
+                            <%= cartCount %>
+                        </span>
+                        <% } %>
+                </a>
+
+                <a href="/login" class="icon-link" aria-label="Logga in">
+                    👤
+                </a>
+            </div>
+        </div>
+
+        <%- include('./partials/navbar') %>
+    </header>
+
+    <main>
+
+        <h1 class="category-title">
+            Hittade <%= products.length %> produkter
+        </h1>
+
+        <%- include('./partials/popular-products') %>
+
+    </main>
+
+    <%- include('./partials/footer') %>
 
 </body>
-<%- include('./partials/footer') %>
 
 </html>

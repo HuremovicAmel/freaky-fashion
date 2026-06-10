@@ -76,6 +76,23 @@ app.get('/', function (req, res) {
       res.render('index', {
         products,
         categories,
+        spots: [
+          {
+            image: 'https://placehold.co/600x400.png',
+            text: 'Kläder',
+            link: '/categories/klader'
+          },
+          {
+            image: 'https://placehold.co/600x400.png',
+            text: 'Accessoarer',
+            link: '/categories/accessoarer'
+          },
+          {
+            image: 'https://placehold.co/600x400.png',
+            text: 'Skor',
+            link: '/categories/skor'
+          }
+        ],
         favoriteProductIds: req.session.favorites || [],
         favoriteCount: getFavoriteCount(req),
         cartCount: getCartCount(req)
@@ -541,7 +558,6 @@ app.get('/login', (req, res) => {
     });
   });
 });
-
 
 app.use(function (req, res, next) {
   next(createError(404));
