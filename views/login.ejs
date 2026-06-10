@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logga in - Freaky Fashion</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+
+        <div class="header-logo">
+            <a href="/" class="logo-box">
+                <img src="https://placehold.co/600x200/png" alt="Freaky Fashion Logo">
+            </a>
+        </div>
+
+        <div class="header-tools">
+
+            <form class="search-form" action="/search" method="get">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+
+                <input type="search" name="q" placeholder="Sök produkt" aria-label="Sök produkt">
+            </form>
+
+            <div class="header-actions">
+
+                <a href="/favorites" class="icon-link favorites-link" aria-label="Favoriter">
+
+                    ♥
+
+                    <% if (favoriteCount> 0) { %>
+                        <span class="favorites-count">
+                            <%= favoriteCount %>
+                        </span>
+                        <% } %>
+
+                </a>
+
+                <a href="/basket" class="icon-link basket-link" aria-label="Varukorg">
+
+                    🛒
+
+                    <% if (cartCount> 0) { %>
+                        <span class="basket-count">
+                            <%= cartCount %>
+                        </span>
+                        <% } %>
+
+                </a>
+
+                <a href="/login" class="icon-link" aria-label="Logga in">
+                    👤
+                </a>
+
+            </div>
+
+        </div>
+
+        <%- include('./partials/navbar') %>
+
+    </header>
+
+    <main class="container">
+
+        <section class="login-section">
+
+            <h1 class="login-title">
+                Logga in
+            </h1>
+
+            <form action="/fake-login" method="get">
+
+                <button type="submit" class="login-button">
+                    Logga in som admin
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+
+        <div class="footer-accordion">
+
+            <details class="accordion-item" open>
+                <summary class="accordion-title">Shopping</summary>
+
+                <div class="accordion-content">
+                    <a href="#">Vinterjackor</a>
+                    <a href="#">Pufferjackor</a>
+                    <a href="#">Kappa</a>
+                    <a href="#">Trenchcoats</a>
+                </div>
+            </details>
+
+            <details class="accordion-item">
+                <summary class="accordion-title">Mina Sidor</summary>
+
+                <div class="accordion-content">
+                    <a href="#">Mina Ordrar</a>
+                    <a href="#">Mitt Konto</a>
+                </div>
+            </details>
+
+            <details class="accordion-item">
+                <summary class="accordion-title">Kundtjänst</summary>
+
+                <div class="accordion-content">
+                    <a href="#">Returnpolicy</a>
+                    <a href="#">Integritetspolicy</a>
+                </div>
+            </details>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; Freaky Fashion</p>
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

@@ -530,6 +530,19 @@ app.post('/register', (req, res) => {
   });
 });
 
+app.get('/login', (req, res) => {
+  db.all(`SELECT * FROM categories`, [], (err, categories) => {
+    if (err) return res.send('Database error');
+
+    res.render('login', {
+      categories,
+      favoriteCount: getFavoriteCount(req),
+      cartCount: getCartCount(req)
+    });
+  });
+});
+
+
 app.use(function (req, res, next) {
   next(createError(404));
 });

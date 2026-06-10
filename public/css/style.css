@@ -1065,6 +1065,42 @@ main {
     font-size: 24px;
 }
 
+/* Login page */
+
+.login-section {
+    min-height: 40vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 4rem 1rem;
+}
+
+.login-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.login-button {
+    background-color: #222;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.login-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+
 @media (max-width: 767px) {
     @media (max-width: 767px) {
         .basket-table {
