@@ -47,10 +47,6 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-function getFavoriteCount(req) {
-  return (req.session.favorites || []).length;
-}
-
 function getCartCount(req) {
   return (req.session.cart || []).length;
 }
@@ -151,13 +147,17 @@ app.get('/categories/:slug', (req, res) => {
       `, [category.id], (err, products) => {
         if (err) return res.send('Database error');
 
-        res.render('category', {
-          products,
-          categories,
-          category,
-          favoriteProductIds: req.session.favorites || [],
-          favoriteCount: getFavoriteCount(req),
-          cartCount: getCartCount(req)
+        getFavoriteProductIds(req, (err, favoriteProductIds) => {
+          if (err) return res.send('Database error');
+
+          res.render('category', {
+            products,
+            categories,
+            category,
+            favoriteProductIds,
+            favoriteCount: favoriteProductIds.length,
+            cartCount: getCartCount(req)
+          });
         });
       });
     });
@@ -176,12 +176,16 @@ app.get('/news', (req, res) => {
     `, [], (err, products) => {
       if (err) return res.send('Database error');
 
-      res.render('news', {
-        products,
-        categories,
-        favoriteProductIds: req.session.favorites || [],
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+      getFavoriteProductIds(req, (err, favoriteProductIds) => {
+        if (err) return res.send('Database error');
+
+        res.render('news', {
+          products,
+          categories,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -211,12 +215,17 @@ app.get('/products/:slug', (req, res) => {
       `, [product.id], (err, similarProducts) => {
         if (err) return res.send('Database error');
 
-        res.render('product-details', {
-          product,
-          similarProducts,
-          categories,
-          favoriteCount: getFavoriteCount(req),
-          cartCount: getCartCount(req)
+        getFavoriteProductIds(req, (err, favoriteProductIds) => {
+          if (err) return res.send('Database error');
+
+          res.render('product-details', {
+            product,
+            similarProducts,
+            categories,
+            favoriteProductIds,
+            favoriteCount: favoriteProductIds.length,
+            cartCount: getCartCount(req)
+          });
         });
       });
     });
@@ -237,13 +246,17 @@ app.get('/search', (req, res) => {
     `, [`%${searchTerm}%`], (err, products) => {
       if (err) return res.send('Database error');
 
-      res.render('search', {
-        products,
-        categories,
-        searchTerm,
-        favoriteProductIds: req.session.favorites || [],
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+      getFavoriteProductIds(req, (err, favoriteProductIds) => {
+        if (err) return res.send('Database error');
+
+        res.render('search', {
+          products,
+          categories,
+          searchTerm,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -301,36 +314,38 @@ app.post('/favorites/:id', (req, res) => {
 });
 
 app.get('/favorites', (req, res) => {
-  const favoriteIds = req.session.favorites || [];
-
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
     if (err) return res.send('Database error');
 
-    if (favoriteIds.length === 0) {
-      return res.render('favorites', {
-        products: [],
-        categories,
-        favoriteProductIds: favoriteIds,
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
-      });
-    }
-
-    const placeholders = favoriteIds.map(() => '?').join(',');
-
-    db.all(`
-      SELECT *
-      FROM products
-      WHERE id IN (${placeholders})
-    `, favoriteIds, (err, products) => {
+    getFavoriteProductIds(req, (err, favoriteIds) => {
       if (err) return res.send('Database error');
 
-      res.render('favorites', {
-        products,
-        categories,
-        favoriteProductIds: favoriteIds,
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+      if (favoriteIds.length === 0) {
+        return res.render('favorites', {
+          products: [],
+          categories,
+          favoriteProductIds: favoriteIds,
+          favoriteCount: favoriteIds.length,
+          cartCount: getCartCount(req)
+        });
+      }
+
+      const placeholders = favoriteIds.map(() => '?').join(',');
+
+      db.all(`
+        SELECT *
+        FROM products
+        WHERE id IN (${placeholders})
+      `, favoriteIds, (err, products) => {
+        if (err) return res.send('Database error');
+
+        res.render('favorites', {
+          products,
+          categories,
+          favoriteProductIds: favoriteIds,
+          favoriteCount: favoriteIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -352,40 +367,46 @@ app.get('/basket', (req, res) => {
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
     if (err) return res.send('Database error');
 
-    if (cartIds.length === 0) {
-      return res.render('basket', {
-        products: [],
-        categories,
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
-      });
-    }
-
-    const uniqueIds = [...new Set(cartIds)];
-    const placeholders = uniqueIds.map(() => '?').join(',');
-
-    db.all(`
-      SELECT *
-      FROM products
-      WHERE id IN (${placeholders})
-    `, uniqueIds, (err, products) => {
+    getFavoriteProductIds(req, (err, favoriteProductIds) => {
       if (err) return res.send('Database error');
 
-      const cartProducts = products.map(product => {
-        const quantity = cartIds.filter(id => id === product.id).length;
+      if (cartIds.length === 0) {
+        return res.render('basket', {
+          products: [],
+          categories,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
+      }
 
-        return {
-          ...product,
-          quantity,
-          total: quantity * product.price
-        };
-      });
+      const uniqueIds = [...new Set(cartIds)];
+      const placeholders = uniqueIds.map(() => '?').join(',');
 
-      res.render('basket', {
-        products: cartProducts,
-        categories,
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+      db.all(`
+        SELECT *
+        FROM products
+        WHERE id IN (${placeholders})
+      `, uniqueIds, (err, products) => {
+        if (err) return res.send('Database error');
+
+        const cartProducts = products.map(product => {
+          const quantity = cartIds.filter(id => id === product.id).length;
+
+          return {
+            ...product,
+            quantity,
+            total: quantity * product.price
+          };
+        });
+
+        res.render('basket', {
+          products: cartProducts,
+          categories,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -422,40 +443,46 @@ app.get('/checkout', (req, res) => {
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
     if (err) return res.send('Database error');
 
-    if (cartIds.length === 0) {
-      return res.render('checkout', {
-        products: [],
-        categories,
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
-      });
-    }
-
-    const uniqueIds = [...new Set(cartIds)];
-    const placeholders = uniqueIds.map(() => '?').join(',');
-
-    db.all(`
-      SELECT *
-      FROM products
-      WHERE id IN (${placeholders})
-    `, uniqueIds, (err, products) => {
+    getFavoriteProductIds(req, (err, favoriteProductIds) => {
       if (err) return res.send('Database error');
 
-      const checkoutProducts = products.map(product => {
-        const quantity = cartIds.filter(id => id === product.id).length;
+      if (cartIds.length === 0) {
+        return res.render('checkout', {
+          products: [],
+          categories,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
+      }
 
-        return {
-          ...product,
-          quantity,
-          total: quantity * product.price
-        };
-      });
+      const uniqueIds = [...new Set(cartIds)];
+      const placeholders = uniqueIds.map(() => '?').join(',');
 
-      res.render('checkout', {
-        products: checkoutProducts,
-        categories,
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+      db.all(`
+        SELECT *
+        FROM products
+        WHERE id IN (${placeholders})
+      `, uniqueIds, (err, products) => {
+        if (err) return res.send('Database error');
+
+        const checkoutProducts = products.map(product => {
+          const quantity = cartIds.filter(id => id === product.id).length;
+
+          return {
+            ...product,
+            quantity,
+            total: quantity * product.price
+          };
+        });
+
+        res.render('checkout', {
+          products: checkoutProducts,
+          categories,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -589,12 +616,16 @@ app.get('/register', (req, res) => {
     `, [], (err, products) => {
       if (err) return res.send('Database error');
 
-      res.render('register', {
-        categories,
-        products,
-        favoriteProductIds: req.session.favorites || [],
-        favoriteCount: getFavoriteCount(req),
-        cartCount: getCartCount(req)
+      getFavoriteProductIds(req, (err, favoriteProductIds) => {
+        if (err) return res.send('Database error');
+
+        res.render('register', {
+          categories,
+          products,
+          favoriteProductIds,
+          favoriteCount: favoriteProductIds.length,
+          cartCount: getCartCount(req)
+        });
       });
     });
   });
@@ -618,10 +649,15 @@ app.get('/login', (req, res) => {
   db.all(`SELECT * FROM categories`, [], (err, categories) => {
     if (err) return res.send('Database error');
 
-    res.render('login', {
-      categories,
-      favoriteCount: getFavoriteCount(req),
-      cartCount: getCartCount(req)
+    getFavoriteProductIds(req, (err, favoriteProductIds) => {
+      if (err) return res.send('Database error');
+
+      res.render('login', {
+        categories,
+        favoriteProductIds,
+        favoriteCount: favoriteProductIds.length,
+        cartCount: getCartCount(req)
+      });
     });
   });
 });

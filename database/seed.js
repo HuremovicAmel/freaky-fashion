@@ -5,10 +5,12 @@ db.serialize(() => {
     db.run(`DELETE FROM products`);
     db.run(`DELETE FROM categories`);
     db.run(`DELETE FROM users`);
+    db.run(`DELETE FROM favorites`);
 
     db.run(`DELETE FROM sqlite_sequence WHERE name='products'`);
     db.run(`DELETE FROM sqlite_sequence WHERE name='categories'`);
     db.run(`DELETE FROM sqlite_sequence WHERE name='users'`);
+    db.run(`DELETE FROM sqlite_sequence WHERE name='favorites'`);
 
     db.run(`
         INSERT INTO categories
